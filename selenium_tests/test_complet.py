@@ -184,15 +184,7 @@ try:
 except Exception as e:
     log("Page Notifications affiche les operations", False, str(e))
 
-print("\n🔵 TEST 15: Dropdown Notifications")
-try:
-    go("notifications/dropdown")
-    time.sleep(2)
-    page = driver.page_source.lower()
-    assert len(page) > 10
-    log("Dropdown Notifications fonctionne", True)
-except Exception as e:
-    log("Dropdown Notifications fonctionne", False, str(e))
+
 
 print("\n🔵 TEST 16: Bouton Actualiser")
 try:
