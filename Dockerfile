@@ -4,9 +4,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . .
 RUN composer install --no-dev --optimize-autoloader
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!\!g' /etc/apache2/sites-available/*.conf
 RUN a2enmod rewrite
+RUN echo '<VirtualHost *:80><DocumentRoot /var/www/html/public><Directory /var/www/html/public>AllowOverride All</Directory></VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 EXPOSE 80
 CMD ["apache2-foreground"]
