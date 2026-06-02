@@ -1,37 +1,37 @@
-<?php
-
-namespace App\Http\Controllers\Auth;
-
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
-class LoginController extends Controller
+public function login(Request $request)
 {
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+    $credentials = $request->only('email', 'password');
+
+    // 🔥 DEBUG 1 : check input
+    logger()->info('LOGIN ATTEMPT', $credentials);
+
+    if (Auth::attempt($credentials)) {
+
+        // 🔥 DEBUG 2 : auth OK
+        logger()->info('AUTH SUCCESS', [
+            'user' => Auth::user(),
+            'id' => Auth::id(),
         ]);
 
-        $credentials = $request->only('email', 'password');
+        $request->session()->regenerate();
 
-        if (Auth::attempt($credentials)) {
+        // 🔥 DEBUG 3 : session data
+        logger()->info('SESSION AFTER LOGIN', session()->all());
 
-            // 🔥 IMPORTANT (fix session issue)
-            $request->session()->regenerate();
-
-            return redirect()->intended('/dashboard');
-        }
-
-        return back()->withErrors([
-            'email' => 'Email ou mot de passe incorrect'
-        ]);
+        return redirect()->intended('/dashboard');
     }
+
+    // 🔥 DEBUG 4 : auth failed
+    logger()->warning('AUTH FAILED', [
+        'email' => $request->email,
+    ]);
+
+    return back()->withErrors([
+        'email' => 'Email ou mot de passe incorrect'
+    ]);
 }
