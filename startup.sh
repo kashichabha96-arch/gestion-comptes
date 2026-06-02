@@ -1,23 +1,9 @@
 #!/bin/bash
 
-echo "🚀 Starting Laravel setup..."
+echo "🚀 Laravel starting..."
 
-# Fix permissions (important on Render/Docker)
-chown -R www-data:www-data /var/www/html/storage
-chown -R www-data:www-data /var/www/html/bootstrap/cache
-
-# Clear caches
 php artisan optimize:clear
 
-# Run migrations safely
-php artisan migrate --force
+php artisan migrate --force || true
 
-# Cache config for production
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-echo "✅ Laravel ready!"
-
-# Start Apache
 apache2-foreground
